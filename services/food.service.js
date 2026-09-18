@@ -38,7 +38,15 @@ export const createFood = async (formData) => {
         isVeg: formData.isVeg ?? true,
         isAvailable: formData.isAvailable ?? true,
         isActive: formData.isActive ?? true,
-        preparationTime: formData.preparationTime
+        preparationTime: formData.preparationTime,
+        ingredients: formData.ingredients ?? [],
+        servingSize: formData.servingSize ?? "",
+        serves: formData.serves ?? 1,
+        cuisine: formData.cuisine ?? "",
+        tags: formData.tags ?? [],
+        featured: formData.featured ?? false,
+        rating: formData.rating ?? 0,
+        reviewCount: formData.reviewCount ?? 0,
     });
 
     await food.save();
@@ -92,6 +100,14 @@ export const updateFood = async (id, formData) => {
     food.isAvailable = formData.isAvailable ?? true;
     food.isActive = formData.isActive ?? true;
     food.preparationTime = formData.preparationTime;
+    food.ingredients = formData.ingredients ?? [];
+    food.servingSize = formData.servingSize ?? "";
+    food.serves = formData.serves ?? 1;
+    food.cuisine = formData.cuisine ?? "";
+    food.tags = formData.tags ?? [];
+    food.featured = formData.featured ?? false;
+    food.rating = formData.rating ?? 0;
+    food.reviewCount = formData.reviewCount ?? 0;
     await food.save();
 
     return food;

@@ -6,11 +6,51 @@ import {
     CircleOff,
     CheckCircle2,
     XCircle,
+    Star,
+    Users,
+    UtensilsCrossed,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import InnerPageHeaderCard from "../../../../../components/admin/InnerPageHeaderCard";
+
+function InfoItem({ label, value }) {
+    return (
+        <div>
+            <p className="text-xs text-gray-400">
+                {label}
+            </p>
+
+            <p className="mt-1 text-sm font-medium text-gray-800">
+                {value || "--"}
+            </p>
+        </div>
+    );
+}
+
+function ChipList({ items, emptyLabel = "--" }) {
+    if (!items?.length) {
+        return (
+            <p className="mt-2 text-sm text-gray-500">
+                {emptyLabel}
+            </p>
+        );
+    }
+
+    return (
+        <div className="mt-2 flex flex-wrap gap-2">
+            {items.map((item, index) => (
+                <span
+                    key={`${item}-${index}`}
+                    className="rounded-full bg-orange-50 px-3 py-1 text-xs font-medium text-orange-700"
+                >
+                    {item}
+                </span>
+            ))}
+        </div>
+    );
+}
 
 export default function ViewFoodPage() {
     const params = useParams();
@@ -63,9 +103,18 @@ export default function ViewFoodPage() {
                 <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm lg:col-span-2">
                     <div className="flex flex-col gap-3 border-b border-gray-100 pb-5 sm:flex-row sm:items-start sm:justify-between">
                         <div>
-                            <h2 className="text-2xl font-semibold text-gray-900">
-                                {food.name}
-                            </h2>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <h2 className="text-2xl font-semibold text-gray-900">
+                                    {food.name}
+                                </h2>
+
+                                {food.featured && (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-600">
+                                        <Star size={12} />
+                                        Featured
+                                    </span>
+                                )}
+                            </div>
 
                             <p className="mt-1 text-sm text-gray-500">
                                 {food?.category?.name ? food.category.name : "--"}
@@ -131,8 +180,69 @@ export default function ViewFoodPage() {
                         </div>
                     </div>
 
+                    {/* Serving */}
+                    <div className="grid grid-cols-1 gap-5 border-b border-gray-100 py-5 sm:grid-cols-3">
+                        <div>
+                            <p className="text-xs text-gray-400">
+                                Serving Size
+                            </p>
+
+                            <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-gray-800">
+                                <UtensilsCrossed size={16} />
+                                {food.servingSize || "--"}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p className="text-xs text-gray-400">
+                                Serves
+                            </p>
+
+                            <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-gray-800">
+                                <Users size={16} />
+                                {food.serves
+                                    ? `${food.serves} ${food.serves === 1 ? "person" : "people"}`
+                                    : "--"}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p className="text-xs text-gray-400">
+                                Cuisine
+                            </p>
+
+                            <p className="mt-1 text-sm font-medium text-gray-800">
+                                {food.cuisine || "--"}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Rating */}
+                    <div className="grid grid-cols-1 gap-5 border-b border-gray-100 py-5 sm:grid-cols-2">
+                        <div>
+                            <p className="text-xs text-gray-400">
+                                Rating
+                            </p>
+
+                            <p className="mt-1 flex items-center gap-1.5 text-lg font-semibold text-gray-900">
+                                <Star size={17} className="fill-amber-400 text-amber-400" />
+                                {food.rating ?? 0} / 5
+                            </p>
+                        </div>
+
+                        <div>
+                            <p className="text-xs text-gray-400">
+                                Reviews
+                            </p>
+
+                            <p className="mt-1 text-lg font-semibold text-gray-900">
+                                {food.reviewCount ?? 0}
+                            </p>
+                        </div>
+                    </div>
+
                     {/* Status */}
-                    <div className="grid grid-cols-1 gap-4 pt-5 sm:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 pt-5 sm:grid-cols-3">
                         <div className="rounded-lg border border-gray-100 bg-gray-50 p-4">
                             <p className="text-xs text-gray-400">
                                 Availability
@@ -172,7 +282,43 @@ export default function ViewFoodPage() {
                                 )}
                             </div>
                         </div>
+
+                        <div className="rounded-lg border border-gray-100 bg-gray-50 p-4">
+                            <p className="text-xs text-gray-400">
+                                Featured
+                            </p>
+
+                            <div className="mt-2">
+                                {food.featured ? (
+                                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-amber-600">
+                                        <Star size={17} />
+                                        Featured
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500">
+                                        <XCircle size={17} />
+                                        Not featured
+                                    </span>
+                                )}
+                            </div>
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                    <h2 className="text-base font-semibold text-gray-900">
+                        Ingredients
+                    </h2>
+                    <ChipList items={food.ingredients} emptyLabel="No ingredients added" />
+                </div>
+
+                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                    <h2 className="text-base font-semibold text-gray-900">
+                        Tags
+                    </h2>
+                    <ChipList items={food.tags} emptyLabel="No tags added" />
                 </div>
             </div>
 
@@ -182,35 +328,12 @@ export default function ViewFoodPage() {
                     Additional Information
                 </h2>
                 <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    <div>
-                        <p className="text-xs text-gray-400">
-                            Food Name
-                        </p>
-
-                        <p className="mt-1 text-sm font-medium text-gray-800">
-                            {food.name}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p className="text-xs text-gray-400">
-                            Category
-                        </p>
-
-                        <p className="mt-1 text-sm font-medium text-gray-800">
-                            {food?.category?.name ? food.category.name : "--"}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p className="text-xs text-gray-400">
-                            Slug
-                        </p>
-
-                        <p className="mt-1 break-all text-sm font-medium text-gray-800">
-                            {food.slug}
-                        </p>
-                    </div>
+                    <InfoItem label="Food Name" value={food.name} />
+                    <InfoItem label="Category" value={food?.category?.name} />
+                    <InfoItem label="Slug" value={food.slug} />
+                    <InfoItem label="Cuisine" value={food.cuisine} />
+                    <InfoItem label="Serving Size" value={food.servingSize} />
+                    <InfoItem label="Serves" value={food.serves} />
                 </div>
             </div>
         </div>

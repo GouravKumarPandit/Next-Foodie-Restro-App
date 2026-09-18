@@ -7,6 +7,7 @@ import {
     X,
     UserRound,
 } from "lucide-react";
+import Link from "next/link";
 
 import { useState } from "react";
 
@@ -16,7 +17,6 @@ export default function Header() {
     return (
         <header className="sticky top-0 z-50 border-b border-[#eee5dc] bg-white">
             <div className="mx-auto flex h-[82px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-
                 {/* Logo */}
                 <div className="flex items-center gap-3">
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ff6900] text-white shadow-sm">
@@ -34,42 +34,23 @@ export default function Header() {
                     </div>
                 </div>
 
-                {/* Desktop Navigation */}
                 <nav className="hidden items-center gap-9 lg:flex">
-
-                    <a
-                        href="#"
-                        className="font-semibold text-[#ff6900]"
-                    >
+                    <Link href="/" className="font-semibold text-[#ff6900]" >
                         Home
-                    </a>
+                    </Link>
 
-                    <a
-                        href="#"
-                        className="font-medium text-[#344054] transition hover:text-[#ff6900]"
-                    >
-                        Restaurants
-                    </a>
+                    <Link href="/menu" className="font-medium text-[#344054] transition hover:text-[#ff6900]" >
+                        Menu
+                    </Link>
 
-                    <a
-                        href="#"
-                        className="font-medium text-[#344054] transition hover:text-[#ff6900]"
-                    >
-                        Offers
-                    </a>
-
-                    <a
-                        href="#"
-                        className="font-medium text-[#344054] transition hover:text-[#ff6900]"
-                    >
+                    <Link href="/orders" className="font-medium text-[#344054] transition hover:text-[#ff6900]" >
                         My Orders
-                    </a>
+                    </Link>
 
                 </nav>
 
                 {/* Right Section */}
                 <div className="hidden items-center gap-6 lg:flex">
-
                     <button className="text-[#64748b] transition hover:text-[#ff6900]">
                         <Search size={22} />
                     </button>
@@ -89,7 +70,6 @@ export default function Header() {
                     <button className="rounded-xl bg-[#ff6900] px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-[#e85f00]">
                         Sign Up
                     </button>
-
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -105,36 +85,18 @@ export default function Header() {
             {/* Mobile Menu */}
             {mobileMenu && (
                 <div className="border-t border-[#eee5dc] bg-white px-4 py-5 lg:hidden">
-
                     <div className="flex flex-col gap-4">
-
-                        <a
-                            href="#"
-                            className="rounded-lg bg-[#fff0e5] px-4 py-3 font-semibold text-[#ff6900]"
-                        >
+                        <Link href="/" className="rounded-lg bg-[#fff0e5] px-4 py-3 font-semibold text-[#ff6900]">
                             Home
-                        </a>
+                        </Link>
 
-                        <a
-                            href="#"
-                            className="px-4 py-2 font-medium text-[#344054]"
-                        >
-                            Restaurants
-                        </a>
+                        <Link href="/menu" className="px-4 py-2 font-medium text-[#344054]" >
+                            Menu
+                        </Link>
 
-                        <a
-                            href="#"
-                            className="px-4 py-2 font-medium text-[#344054]"
-                        >
-                            Offers
-                        </a>
-
-                        <a
-                            href="#"
-                            className="px-4 py-2 font-medium text-[#344054]"
-                        >
+                        <Link href="/orders" className="px-4 py-2 font-medium text-[#344054]" >
                             My Orders
-                        </a>
+                        </Link>
 
                         <div className="my-2 h-px bg-[#eee5dc]" />
 
@@ -146,9 +108,7 @@ export default function Header() {
                         <button className="rounded-xl bg-[#ff6900] px-5 py-3 font-semibold text-white">
                             Sign Up
                         </button>
-
                     </div>
-
                 </div>
             )}
         </header>
