@@ -138,7 +138,7 @@ function TagInput({
                     onBlur={handleBlur}
                     onPaste={handlePaste}
                     placeholder={tags.length ? "" : placeholder}
-                    className="min-w-[140px] flex-1 border-0 bg-transparent p-1 text-sm text-gray-900 outline-none placeholder:text-gray-400"
+                    className="min-w-[140px] flex-1 border-0 bg-gray-50 px-2 py-1 bg-transparent p-1 text-sm text-gray-900 outline-none placeholder:text-gray-400"
                 />
             </div>
 

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { authAddressSchema } from "./authAddress.validator";
 
 const requiredString = (label) =>
     z
@@ -12,15 +11,7 @@ const requiredString = (label) =>
         .trim()
         .min(1, { error: `${label} is required`, abort: true });
 
-const userSchema = z.object({
-    first_name: requiredString("First name")
-        .min(2, "First name must be at least 2 characters")
-        .max(15, "First name cannot exceed 15 characters"),
-
-    last_name: requiredString("Last name")
-        .min(2, "Last name must be at least 2 characters")
-        .max(15, "Last name cannot exceed 15 characters"),
-
+const loginSchema = z.object({
     email: requiredString("Email")
         .min(2, "Email must be at least 2 characters")
         .max(30, "Email cannot exceed 30 characters")
@@ -29,11 +20,6 @@ const userSchema = z.object({
     password: requiredString("Password")
         .min(6, "Password must be at least 6 characters")
         .max(15, "Password cannot exceed 15 characters"),
+});
 
-    phone: requiredString("Phone")
-        .min(10, "Phone must be at least 10 characters")
-        .max(15, "Phone cannot exceed 15 characters")
-        .regex(/^\d+$/, "Phone must contain only digits"),
-}).extend(authAddressSchema.shape);
-
-export { userSchema };
+export { loginSchema };

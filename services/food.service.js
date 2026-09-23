@@ -3,10 +3,82 @@ import { AppError } from "../lib/errors";
 import Category from "../models/Category";
 import Food from "../models/Food";
 
-export const getFoods = async () => {
+export const getFoodsForAdmin = async () => {
     await connectDB();
 
     const foods = await Food.find().populate("category", "name").lean();
+
+    return foods;
+}
+
+export const getFoodsForCustomer = async (filters) => {
+    await connectDB();
+
+    const { search, category, foodType, cuisine, featured, priceMin, priceMax, availability } = filters;
+    const query = {};
+
+    if(search) {
+        query.$or = [
+            { name: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+            { cuisine: { $regex: search, $options: "i" } },
+            { tags: { $regex: search, $options: "i" } },
+        ];
+    }
+    if(category) {
+        query.category = category;
+    }
+    if(foodType) {
+        query.isVeg = foodType === "true";
+    }
+    if(cuisine) {
+        query.cuisine = {
+            $regex: cuisine,
+            $options: "i",
+        };
+    };
+    if(featured) {
+        query.featured = featured === "true";
+    }
+    if (priceMin || priceMax) {
+        const priceConditions = [];
+
+        const effectivePrice = {
+            $cond: [
+                { $gt: ["$discountPrice", 0] },
+                "$discountPrice",
+                "$price",
+            ],
+        };
+
+        if (priceMin) {
+            priceConditions.push({
+                $gte: [effectivePrice, Number(priceMin)],
+            });
+        }
+
+        if (priceMax) {
+            priceConditions.push({
+                $lte: [effectivePrice, Number(priceMax)],
+            });
+        }
+
+        query.$expr = {
+            $and: priceConditions,
+        };
+    }
+    if(availability) {
+        query.isAvailable = availability === "true";
+    }
+    query.isActive = true;
+    
+    const result = await Food.find(query).populate("category", "name").lean();
+    const cuisines = await Food.distinct("cuisine", { isActive: true });
+
+    const foods = {
+        foodData: result,
+        cuisine: cuisines
+    }
 
     return foods;
 }

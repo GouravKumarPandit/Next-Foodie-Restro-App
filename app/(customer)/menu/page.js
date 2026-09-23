@@ -13,79 +13,21 @@ import Heading from "../../../components/ui/Heading";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import FoodCardPlaceholder from "../../../components/food/FoodCardPlaceholder";
+import Pagination from "../../../components/ui/Pagination";
 
 export default function MenuPage() {
     const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState([]);
     const [foods, setFoods] = useState([]);
-    // const foods = [
-    //     {
-    //         id: "1",
-    //         name: "Veg Biryani",
-    //         category: "Biryani",
-    //         image: "",
-    //         price: 299,
-    //         discountPrice: 249,
-    //         isVeg: true,
-    //         preparationTime: 30,
-    //         isAvailable: true,
-    //     },
-    //     {
-    //         id: "2",
-    //         name: "Chicken Burger",
-    //         category: "Burgers",
-    //         image: "",
-    //         price: 249,
-    //         discountPrice: 199,
-    //         isVeg: false,
-    //         preparationTime: 20,
-    //         isAvailable: true,
-    //     },
-    //     {
-    //         id: "3",
-    //         name: "Margherita Pizza",
-    //         category: "Pizza",
-    //         image: "",
-    //         price: 399,
-    //         discountPrice: 349,
-    //         isVeg: true,
-    //         preparationTime: 25,
-    //         isAvailable: true,
-    //     },
-    //     {
-    //         id: "4",
-    //         name: "French Fries",
-    //         category: "Sides",
-    //         image: "",
-    //         price: 149,
-    //         discountPrice: 0,
-    //         isVeg: true,
-    //         preparationTime: 15,
-    //         isAvailable: false,
-    //     },
-    //     {
-    //         id: "5",
-    //         name: "Chicken Biryani",
-    //         category: "Biryani",
-    //         image: "",
-    //         price: 349,
-    //         discountPrice: 299,
-    //         isVeg: false,
-    //         preparationTime: 35,
-    //         isAvailable: true,
-    //     },
-    //     {
-    //         id: "6",
-    //         name: "Cold Coffee",
-    //         category: "Drinks",
-    //         image: "",
-    //         price: 129,
-    //         discountPrice: 99,
-    //         isVeg: true,
-    //         preparationTime: 10,
-    //         isAvailable: true,
-    //     },
-    // ];
+    const [cuisineList, setCuisineList] = useState("");
+    const [search, setSearch] = useState("");
+    const [category, setCategory] = useState("");
+    const [foodType, setFoodType] = useState("");
+    const [cuisine, setCuisine] = useState("");
+    const [featured, setFeatured] = useState("");
+    const [priceMin, setPriceMin] = useState("");
+    const [priceMax, setPriceMax] = useState("");
+    const [availability, setAvailability] = useState("");
 
     const fetchCategories = async () => {
         try {
@@ -112,7 +54,18 @@ export default function MenuPage() {
 
     const fetchFoods = async () => {
         try {
-            const response = await fetch("/api/foods");
+            setLoading(true);
+            const params = new URLSearchParams({
+                search,
+                category,
+                foodType,
+                cuisine,
+                featured,
+                priceMin,
+                priceMax,
+                availability,
+            });
+            const response = await fetch(`/api/foods?${params.toString()}`);
             const result = await response.json();
             if (!response.ok) {
                 toast.error(result.message);
@@ -120,7 +73,8 @@ export default function MenuPage() {
             }
 
             if (result.success) {
-                setFoods(result.data);
+                setFoods(result.data.foodData);
+                setCuisineList(result.data.cuisine);
             }
         } catch (error) {
             console.log("Foods fetch error >> ", error);
@@ -130,23 +84,40 @@ export default function MenuPage() {
         }
     }
 
+    const handleReset = () => {
+        setSearch("");
+        setCategory("");
+        setFoodType("");
+        setCuisine("");
+        setFeatured("");
+        setPriceMin("");
+        setPriceMax("");
+        setAvailability("");
+    }
+
     useEffect(() => {
-        const fetchData = async () => {
-            await Promise.all([
-                fetchFoods(),
-                fetchCategories()
-            ]);
-        };
+        fetchCategories();
+    }, []);
 
-        fetchData();
-    }, [])
+    useEffect(() => {
+        fetchFoods();
+    }, [
+        search,
+        category,
+        foodType,
+        cuisine,
+        featured,
+        priceMin,
+        priceMax,
+        availability,
+    ]);
 
-    const cuisineOptions = [...new Set(
-        foods.map((food) => food.cuisine).filter(Boolean)
+    const cuisineOptions = cuisineList.length ? [...new Set(
+        cuisineList.map((cuisine) => cuisine).filter(Boolean)
     )].map((cuisine) => ({
         key: cuisine,
         value: cuisine,
-    }));
+    })) : [];
 
     return (
         <main className="min-h-screen bg-orange-50">
@@ -163,7 +134,7 @@ export default function MenuPage() {
 
                             <Heading heading={"Filter Menu"} description={"Find food according to your preference"} />
                         </div>
-                        <Reset />
+                        <Reset handleReset={handleReset} />
                     </div>
 
                     <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
@@ -182,6 +153,8 @@ export default function MenuPage() {
                                     type="text"
                                     placeholder="Search by name, cuisine, or tag..."
                                     className="py-2.5 pl-10 pr-4"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -192,6 +165,8 @@ export default function MenuPage() {
                             id="category"
                             className="px-3 py-2.5"
                             options={categories}
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
                         />
 
                         <Select
@@ -200,9 +175,11 @@ export default function MenuPage() {
                             id="foodType"
                             className="px-3 py-2.5"
                             options={[
-                                { key: "vegetarian", value: "Vegetarian" },
-                                { key: "non-veg", value: "Non-Vegetarian" }
+                                { key: true, value: "Vegetarian" },
+                                { key: false, value: "Non-Vegetarian" }
                             ]}
+                            value={foodType}
+                            onChange={(e) => setFoodType(e.target.value)}
                         />
 
                         <Select
@@ -211,6 +188,8 @@ export default function MenuPage() {
                             id="cuisine"
                             className="px-3 py-2.5"
                             options={cuisineOptions}
+                            value={cuisine}
+                            onChange={(e) => setCuisine(e.target.value)}
                         />
 
                         <Select
@@ -219,9 +198,11 @@ export default function MenuPage() {
                             id="featured"
                             className="px-3 py-2.5"
                             options={[
-                                { key: "featured", value: "Featured only" },
-                                { key: "regular", value: "Regular" },
+                                { key: true, value: "Featured only" },
+                                { key: false, value: "Regular" },
                             ]}
+                            value={featured}
+                            onChange={(e) => setFeatured(e.target.value)}
                         />
 
                         <div>
@@ -235,6 +216,8 @@ export default function MenuPage() {
                                     min="0"
                                     placeholder="Min ₹"
                                     className="py-2.5 pr-4"
+                                    value={priceMin}
+                                    onChange={(e) => setPriceMin(e.target.value)}
                                 />
 
                                 <Input
@@ -242,6 +225,8 @@ export default function MenuPage() {
                                     min="0"
                                     placeholder="Max ₹"
                                     className="px-3 py-2.5"
+                                    value={priceMax}
+                                    onChange={(e) => setPriceMax(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -252,9 +237,11 @@ export default function MenuPage() {
                             id="availability"
                             className="px-3 py-2.5"
                             options={[
-                                { key: "available", value: "Available" },
-                                { key: "unavailable", value: "Unavailable" }
+                                { key: true, value: "Available" },
+                                { key: false, value: "Unavailable" }
                             ]}
+                            value={availability}
+                            onChange={(e) => setAvailability(e.target.value)}
                         />
                     </div>
                 </div>
@@ -301,6 +288,8 @@ export default function MenuPage() {
                         }
                     </div>
                 </div>
+
+                <Pagination />
             </section>
         </main>
     );
