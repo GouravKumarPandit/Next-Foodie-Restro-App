@@ -38,7 +38,8 @@ export default function Header() {
     const profileRef = useRef(null);
     const pathname = usePathname();
     const router = useRouter();
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
+    console.log("User >> ", user);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -116,80 +117,83 @@ export default function Header() {
                         <Search size={22} />
                     </button>
 
-                    <button className="relative text-[#344054]">
+                    <Link href={"/cart"} className="relative text-[#344054]">
                         <ShoppingCart size={22} />
 
                         <span className="absolute -right-3 -top-3 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#ff6900] px-1 text-[10px] font-bold text-white">
                             2
                         </span>
-                    </button>
-
-                    <Link href="/login" className="font-semibold text-[#0b1b35]">
-                        Login
                     </Link>
 
-                    <Link
-                        href="/signup"
-                        className="rounded-xl bg-[#ff6900] px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-[#e85f00]"
-                    >
-                        Sign Up
-                    </Link>
+                    {
+                        !user ? <>
+                            <Link href="/login" className="font-semibold text-[#0b1b35]">
+                                Login
+                            </Link>
 
-                    <div className="relative" ref={profileRef}>
-                        <button
-                            type="button"
-                            onClick={() => setProfileOpen((prev) => !prev)}
-                            className="flex items-center gap-2 rounded-xl border border-[#eee5dc] px-3 py-2.5 font-semibold text-[#0b1b35] transition hover:border-[#ff6900] hover:text-[#ff6900]"
-                            aria-expanded={profileOpen}
-                            aria-haspopup="menu"
-                        >
-                            <UserRound size={18} />
-                            <span>Account</span>
-                            <ChevronDown
-                                size={16}
-                                className={`transition ${profileOpen ? "rotate-180" : ""}`}
-                            />
-                        </button>
-
-                        {profileOpen && (
-                            <div
-                                role="menu"
-                                className="absolute right-0 mt-2 w-48 overflow-hidden rounded-xl border border-[#eee5dc] bg-white py-2 shadow-lg"
+                            <Link
+                                href="/signup"
+                                className="rounded-xl bg-[#ff6900] px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-[#e85f00]"
                             >
-                                <Link
-                                    href="/profile"
-                                    role="menuitem"
-                                    className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#344054] transition hover:bg-[#fff0e5] hover:text-[#ff6900]"
-                                    onClick={() => setProfileOpen(false)}
-                                >
-                                    <User size={16} />
-                                    Profile
-                                </Link>
+                                Sign Up
+                            </Link>
+                        </> :                    
+                        <div className="relative" ref={profileRef}>
+                            <button
+                                type="button"
+                                onClick={() => setProfileOpen((prev) => !prev)}
+                                className="flex items-center gap-2 rounded-xl border border-[#eee5dc] px-3 py-2.5 font-semibold text-[#0b1b35] transition hover:border-[#ff6900] hover:text-[#ff6900]"
+                                aria-expanded={profileOpen}
+                                aria-haspopup="menu"
+                            >
+                                <UserRound size={18} />
+                                <span>Account</span>
+                                <ChevronDown
+                                    size={16}
+                                    className={`transition ${profileOpen ? "rotate-180" : ""}`}
+                                />
+                            </button>
 
-                                <Link
-                                    href="/orders"
-                                    role="menuitem"
-                                    className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#344054] transition hover:bg-[#fff0e5] hover:text-[#ff6900]"
-                                    onClick={() => setProfileOpen(false)}
+                            {profileOpen && (
+                                <div
+                                    role="menu"
+                                    className="absolute right-0 mt-2 w-48 overflow-hidden rounded-xl border border-[#eee5dc] bg-white py-2 shadow-lg"
                                 >
-                                    <Package size={16} />
-                                    My Orders
-                                </Link>
+                                    <Link
+                                        href="/profile"
+                                        role="menuitem"
+                                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#344054] transition hover:bg-[#fff0e5] hover:text-[#ff6900]"
+                                        onClick={() => setProfileOpen(false)}
+                                    >
+                                        <User size={16} />
+                                        Profile
+                                    </Link>
 
-                                <div className="my-1 h-px bg-[#eee5dc]" />
+                                    <Link
+                                        href="/orders"
+                                        role="menuitem"
+                                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#344054] transition hover:bg-[#fff0e5] hover:text-[#ff6900]"
+                                        onClick={() => setProfileOpen(false)}
+                                    >
+                                        <Package size={16} />
+                                        My Orders
+                                    </Link>
 
-                                <button
-                                    type="button"
-                                    role="menuitem"
-                                    onClick={handleLogout}
-                                    className="flex w-full items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
-                                >
-                                    <LogOut size={16} />
-                                    Logout
-                                </button>
-                            </div>
-                        )}
-                    </div>
+                                    <div className="my-1 h-px bg-[#eee5dc]" />
+
+                                    <button
+                                        type="button"
+                                        role="menuitem"
+                                        onClick={handleLogout}
+                                        className="flex w-full items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                                    >
+                                        <LogOut size={16} />
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    }
                 </div>
 
                 <button
@@ -219,37 +223,41 @@ export default function Header() {
 
                         <div className="my-2 h-px bg-[#eee5dc]" />
 
-                        <Link
-                            href="/login"
-                            className="flex items-center gap-2 px-4 py-2 font-semibold text-[#0b1b35]"
-                        >
-                            <UserRound size={18} />
-                            Login
-                        </Link>
+                        {
+                            !user ? <>
+                                <Link
+                                    href="/login"
+                                    className="flex items-center gap-2 px-4 py-2 font-semibold text-[#0b1b35]"
+                                >
+                                    <UserRound size={18} />
+                                    Login
+                                </Link>
 
-                        <Link
-                            href="/signup"
-                            className="rounded-xl bg-[#ff6900] px-5 py-3 text-center font-semibold text-white"
-                        >
-                            Sign Up
-                        </Link>
-
-                        <Link
-                            href="/profile"
-                            className="flex items-center gap-2 px-4 py-2 font-medium text-[#344054]"
-                        >
-                            <User size={18} />
-                            Profile
-                        </Link>
-
-                        <button
-                            type="button"
-                            onClick={handleLogout}
-                            className="flex items-center gap-2 px-4 py-2 text-left font-medium text-red-600"
-                        >
-                            <LogOut size={18} />
-                            Logout
-                        </button>
+                                <Link
+                                    href="/signup"
+                                    className="rounded-xl bg-[#ff6900] px-5 py-3 text-center font-semibold text-white"
+                                >
+                                    Sign Up
+                                </Link>
+                            </> :
+                            <>
+                                <Link
+                                    href="/profile"
+                                    className="flex items-center gap-2 px-4 py-2 font-medium text-[#344054]"
+                                >
+                                    <User size={18} />
+                                    Profile
+                                </Link>
+                                <button
+                                    type="button"
+                                    onClick={handleLogout}
+                                    className="flex items-center gap-2 px-4 py-2 text-left font-medium text-red-600"
+                                >
+                                    <LogOut size={18} />
+                                    Logout
+                                </button>
+                            </>
+                        }
                     </div>
                 </div>
             )}
