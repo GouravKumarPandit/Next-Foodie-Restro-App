@@ -39,7 +39,6 @@ export default function Header() {
     const pathname = usePathname();
     const router = useRouter();
     const { user, logout } = useAuth();
-    console.log("User >> ", user);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
