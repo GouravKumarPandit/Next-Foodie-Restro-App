@@ -12,7 +12,7 @@ import Reset from "../../../components/ui/Reset";
 import Heading from "../../../components/ui/Heading";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import FoodCardPlaceholder from "../../../components/food/FoodCardPlaceholder";
+import FoodCardPlaceholder from "../../../components/placeholder/FoodCardPlaceholder";
 import Pagination from "../../../components/ui/Pagination";
 
 export default function MenuPage() {

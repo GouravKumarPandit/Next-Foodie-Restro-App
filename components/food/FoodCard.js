@@ -1,19 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import {
-    Clock3,
-    Plus,
-    Star,
-    Leaf,
-    Flame,
-    Users,
-} from "lucide-react";
+import { Clock3, Plus, Star, Leaf, Flame, Users } from "lucide-react";
+import { useCart } from "../../context/CartContext";
+import Button from "../ui/Button";
+import Quantity from "./Quantity";
+import { useEffect, useState } from "react";
 
-function FoodCard({
-    food,
-    onAdd,
-}) {
+function FoodCard({ food }) {
+    const { cart, addToCart } = useCart();
+    const [foodPresent, setFoodPresent] = useState(false);
+    const [existingFood, setExistingFood] = useState({});
     const foodId = food?._id || food?.id;
     const hasDiscount =
         food?.discountPrice > 0 &&
@@ -23,6 +20,22 @@ function FoodCard({
             ? food?.category?.name
             : food?.category;
     const tags = Array.isArray(food?.tags) ? food.tags.slice(0, 3) : [];
+
+    const findFoodPresentInCart = () => {
+        setFoodPresent(false);
+        cart.forEach((item) => {
+            if(item.food_id === food._id) {
+                setFoodPresent(true);
+                setExistingFood(item);
+            }
+        })
+    }
+
+    useEffect(() => {
+        if(cart.length){
+            findFoodPresentInCart();
+        }
+    }, [cart])
 
     return (
         <div className="group relative overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-100/50">
@@ -93,10 +106,7 @@ function FoodCard({
 
             {/* Content */}
             <div className="p-4">
-
-                {/* Category + Rating */}
                 <div className="flex items-center justify-between gap-2">
-
                     {categoryName && (
                         <span className="rounded-md bg-orange-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-orange-600">
                             {categoryName}
@@ -120,7 +130,6 @@ function FoodCard({
                     )}
                 </div>
 
-                {/* Food Name */}
                 <h3 className="mt-3 line-clamp-1 text-lg font-bold text-gray-900 transition-colors group-hover:text-orange-500">
                     {food?.name || "Delicious Food"}
                 </h3>
@@ -131,7 +140,6 @@ function FoodCard({
                     </p>
                 )}
 
-                {/* Description */}
                 <p className="mt-1.5 line-clamp-2 min-h-[40px] text-sm leading-5 text-gray-500">
                     {food?.description ||
                         "Delicious and freshly prepared food made just for you."}
@@ -172,10 +180,7 @@ function FoodCard({
                     </p>
                 )}
 
-                {/* Bottom Section */}
                 <div className="mt-4 flex items-end justify-between gap-3">
-
-                    {/* Price */}
                     <div>
                         {hasDiscount ? (
                             <div className="flex items-center gap-2">
@@ -198,39 +203,26 @@ function FoodCard({
                         </p>
                     </div>
 
-                    {/* Add Button */}
-                    <button
-                        type="button"
-                        onClick={(event) => {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            onAdd?.(food);
-                        }}
-                        disabled={!food?.isAvailable}
-                        className="
-                            relative z-20
-                            inline-flex items-center gap-1.5
-                            rounded-xl
-                            bg-orange-500
-                            px-4 py-2.5
-                            text-sm font-semibold text-white
-                            shadow-sm
-                            transition-all duration-200
-                            hover:bg-orange-600
-                            hover:shadow-md
-                            hover:shadow-orange-200
-                            active:scale-95
-                            disabled:cursor-not-allowed
-                            disabled:bg-gray-300
-                            disabled:shadow-none
-                        "
-                    >
-                        <Plus size={17} strokeWidth={2.5} />
-                        Add
-                    </button>
-
+                    { 
+                        foodPresent && existingFood ? 
+                        <Quantity food_id={existingFood.food_id} quantity={existingFood.quantity} /> : 
+                        <Button 
+                            label={
+                                <>
+                                    <Plus size={17} strokeWidth={2.5} />
+                                    Add
+                                </>
+                            }
+                            onClick={async (event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                await addToCart(food._id);
+                            }}
+                            disabled={!food?.isAvailable}
+                            className="relative z-20"
+                        /> 
+                    }
                 </div>
-
             </div>
         </div>
     );

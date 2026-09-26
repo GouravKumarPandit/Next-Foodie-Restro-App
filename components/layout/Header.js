@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
+import { useCart } from "../../context/CartContext";
 
 const publicMenuItems = [
     {
@@ -39,6 +40,12 @@ export default function Header() {
     const pathname = usePathname();
     const router = useRouter();
     const { user, logout } = useAuth();
+    const { cart } = useCart();
+
+    const itemCount = cart.reduce(
+        (sum, item) => sum + Number(item.quantity || 0),
+        0
+    );
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -120,7 +127,7 @@ export default function Header() {
                         <ShoppingCart size={22} />
 
                         <span className="absolute -right-3 -top-3 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#ff6900] px-1 text-[10px] font-bold text-white">
-                            2
+                            {itemCount}
                         </span>
                     </Link>
 

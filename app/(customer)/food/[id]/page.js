@@ -19,12 +19,34 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import PageHeader from "../../../../components/layout/PageHeader";
+import Quantity from "../../../../components/food/Quantity";
+import Button from "../../../../components/ui/Button";
+import { useCart } from "../../../../context/CartContext";
 
 export default function FoodDetailsPage() {
+    const { cart, addToCart } = useCart();
+    const [foodPresent, setFoodPresent] = useState(false);
+    const [existingFood, setExistingFood] = useState({});
     const params = useParams();
     const id = params?.id;
     const [food, setFood] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const findFoodPresentInCart = () => {
+        setFoodPresent(false);
+        cart.forEach((item) => {
+            if(item.food_id === food._id) {
+                setFoodPresent(true);
+                setExistingFood(item);
+            }
+        })
+    }
+
+    useEffect(() => {
+        if(cart.length && food){
+            findFoodPresentInCart();
+        }
+    }, [cart, food])
 
     useEffect(() => {
         if (!id) {
@@ -332,35 +354,30 @@ export default function FoodDetailsPage() {
                                 </div>
                             )}
 
-                            {/* Quantity */}
-                            <div className="mt-7">
-                                <p className="mb-2 text-sm font-medium text-gray-700">
-                                    Quantity
-                                </p>
-
-                                <div className="flex w-fit items-center rounded-lg border border-gray-200">
-                                    <button
-                                        type="button"
-                                        className="p-3 text-gray-500 transition hover:bg-orange-50 hover:text-orange-600"
-                                    >
-                                        <Minus size={16} />
-                                    </button>
-
-                                    <span className="min-w-10 text-center text-sm font-semibold text-gray-900">
-                                        1
-                                    </span>
-
-                                    <button
-                                        type="button"
-                                        className="p-3 text-gray-500 transition hover:bg-orange-50 hover:text-orange-600"
-                                    >
-                                        <Plus size={16} />
-                                    </button>
-                                </div>
-                            </div>
+                            { 
+                                foodPresent && existingFood ? 
+                                <Quantity label={"Quantity"} food_id={existingFood.food_id} quantity={existingFood.quantity} /> : 
+                                <Button 
+                                    label={
+                                        <>
+                                            <ShoppingCart size={19} />
+                                            {food.isAvailable
+                                                ? "Add to Cart"
+                                                : "Currently Unavailable"}
+                                        </>
+                                    }
+                                    onClick={async (event) => {
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        await addToCart(food._id);
+                                    }}
+                                    disabled={!food?.isAvailable}
+                                    className="relative z-20 mt-6"
+                                /> 
+                            }
 
                             {/* Add Cart */}
-                            <button
+                            {/* <button
                                 type="button"
                                 disabled={!food.isAvailable}
                                 className="
@@ -386,7 +403,7 @@ export default function FoodDetailsPage() {
                                 {food.isAvailable
                                     ? "Add to Cart"
                                     : "Currently Unavailable"}
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 </div>

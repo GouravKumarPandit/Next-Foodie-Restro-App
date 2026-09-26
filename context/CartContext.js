@@ -252,6 +252,8 @@ export function CartProvider({ children }){
     };
 
     const updateQuantity = async (food_id, quantity) => {
+        console.log("Update quantity: Food ID >> ", food_id);
+        console.log("Update quantity: quantity >> ", quantity);
         try {
             if (!Number.isInteger(quantity) || quantity < 1 || quantity > 20) {
                 return {
